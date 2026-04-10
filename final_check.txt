@@ -1,0 +1,29 @@
+﻿Loading svelte-check in workspace: c:\Users\ADMIN\Desktop\Sportsbook
+Getting Svelte diagnostics...
+
+c:\Users\ADMIN\Desktop\Sportsbook\[32msrc\routes\+page.ts[39m:6:33
+[31mError[39m: Cannot find module '$lib/data/games.json' or its corresponding type declarations. 
+[36m	// Import games.json at build time/server runtime
+	const gamesData = await import([35m'$lib/data/games.json'[36m);
+	const matches: Match[] = gamesData.default;[39m
+
+c:\Users\ADMIN\Desktop\Sportsbook\[32msrc\lib\components\GameCard.svelte[39m:8:48
+[31mError[39m: Parameter 'm' implicitly has an 'any' type. (ts)
+[36m	// Get specific markets for display
+	const market1x2 = $derived(match.markets.find([35mm[36m => m.sub_type_id === 1));
+	const marketDC = $derived(match.markets.find(m => m.sub_type_id === 10));[39m
+
+c:\Users\ADMIN\Desktop\Sportsbook\[32msrc\lib\components\GameCard.svelte[39m:9:47
+[31mError[39m: Parameter 'm' implicitly has an 'any' type. (ts)
+[36m	const market1x2 = $derived(match.markets.find(m => m.sub_type_id === 1));
+	const marketDC = $derived(match.markets.find([35mm[36m => m.sub_type_id === 10));
+	const marketGG = $derived(match.markets.find(m => m.sub_type_id === 29));[39m
+
+c:\Users\ADMIN\Desktop\Sportsbook\[32msrc\lib\components\GameCard.svelte[39m:10:47
+[31mError[39m: Parameter 'm' implicitly has an 'any' type. (ts)
+[36m	const marketDC = $derived(match.markets.find(m => m.sub_type_id === 10));
+	const marketGG = $derived(match.markets.find([35mm[36m => m.sub_type_id === 29));[39m
+
+====================================
+[31msvelte-check found 4 errors and 0 warnings in 2 files
+[39m
