@@ -1,46 +1,41 @@
 <script lang="ts">
 	import GameCard from '$lib/components/GameCard.svelte';
 	import type { PageData } from './$types';
+	import type { Match } from '$lib/types';
 	import { onMount } from 'svelte';
+	import { ui } from '$lib/ui.svelte';
 	import { fade } from 'svelte/transition';
 
 	let { data } = $props<{ data: PageData }>();
 	let isLoading = $state(false);
+
+	const filteredMatches = $derived(
+		data.matches.filter((m: Match) => 
+			!ui.searchQuery || 
+			m.home_team.toLowerCase().includes(ui.searchQuery.toLowerCase()) || 
+			m.away_team.toLowerCase().includes(ui.searchQuery.toLowerCase())
+		)
+	);
 </script>
 
 <div class="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
-	<!-- Hero Banner (Inspired by design) -->
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-		<div class="bg-gradient-to-br from-indigo-900 to-indigo-700 rounded-2xl p-6 flex items-center justify-between border border-white/10 relative overflow-hidden group cursor-pointer shadow-2xl">
-			<div class="relative z-10 flex flex-col gap-2">
-				<p class="text-[10px] font-black uppercase tracking-widest text-indigo-200">Sports welcome bonus.</p>
-				<h2 class="text-3xl font-black text-white leading-tight">100% up to £50<br/>on first deposit.</h2>
-			</div>
-			<div class="absolute right-0 bottom-0 opacity-20 transform translate-y-4 translate-x-4 transition-transform group-hover:scale-110">⚽</div>
+	<!-- Hero Header -->
+	<div class="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600/20 to-sky-600/20 border border-white/5 p-8 md:p-12">
+		<div class="relative z-10 max-w-2xl">
+			<span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-4">Live Betting</span>
+			<h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tighter leading-tight italic uppercase">Score Big on <span class="text-emerald-500">Every Match</span></h1>
+			<p class="text-text-secondary text-sm md:text-lg mb-8 leading-relaxed">Join millions of fans. Experience sub-millisecond odds updates and the industry's fastest bet placement.</p>
+			<button class="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-xl font-bold text-white shadow-xl shadow-emerald-500/20 transition-all active:scale-95">START BETTING</button>
 		</div>
-		<div class="bg-gradient-to-br from-emerald-900 to-emerald-700 rounded-2xl p-6 flex items-center justify-between border border-white/10 relative overflow-hidden group cursor-pointer shadow-2xl">
-			<div class="relative z-10 flex flex-col gap-2">
-				<p class="text-[10px] font-black uppercase tracking-widest text-emerald-200">Early Payout.</p>
-				<h2 class="text-3xl font-black text-white leading-tight">on a 2-goal or<br/>20-point lead.</h2>
-			</div>
-			<div class="absolute right-0 bottom-0 opacity-20 transform translate-y-4 translate-x-4 transition-transform group-hover:scale-110">🏆</div>
-		</div>
+		<div class="absolute -right-20 -top-20 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full"></div>
 	</div>
 
-	<!-- Main Filter Tabs -->
-	<div class="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
-		<button class="px-6 py-2 rounded-full font-bold text-sm bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">Highlights</button>
-		<button class="px-6 py-2 rounded-full font-bold text-sm hover:bg-white/5 text-text-secondary transition-colors relative">
-			Live
-			<span class="absolute top-1 right-3 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-		</button>
-		<button class="px-6 py-2 rounded-full font-bold text-sm hover:bg-white/5 text-text-secondary transition-colors">Upcoming</button>
-	</div>
-
-	<!-- Soccer Header -->
-	<div class="flex items-center gap-3 mb-4 p-3 bg-white/5 rounded-lg border border-white/5">
-		<span class="text-xl">⚽</span>
-		<h2 class="font-black italic text-lg uppercase tracking-tight">Soccer</h2>
+	<!-- Filter Tabs -->
+	<div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+		<button class="bg-emerald-500 text-white px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap">⚽ Soccer ({filteredMatches.length})</button>
+		<button class="bg-white/5 text-text-muted px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-white/10 transition-colors">🏀 Basketball</button>
+		<button class="bg-white/5 text-text-muted px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-white/10 transition-colors">🎾 Tennis</button>
+		<button class="bg-white/5 text-text-muted px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-white/10 transition-colors">🎮 Esports</button>
 	</div>
 
 	<!-- Game Feed -->
@@ -50,27 +45,36 @@
 				<div class="h-32 bg-background-surface rounded-xl border border-white/5 animate-pulse"></div>
 			{/each}
 		</div>
-	{:else if data.matches.length > 0}
+	{:else if filteredMatches.length > 0}
 		<div class="flex flex-col gap-1" in:fade>
-			{#each data.matches as match (match.parent_match_id)}
+			{#each filteredMatches as match (match.parent_match_id)}
 				<GameCard {match} />
 			{/each}
 		</div>
 	{:else}
 		<div class="bg-background-surface border border-white/5 rounded-2xl p-12 text-center flex flex-col items-center justify-center" in:fade>
 			<div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 grayscale opacity-50">
-				⚽
+				{ui.searchQuery ? '🔍' : '⚽'}
 			</div>
-			<h3 class="font-bold text-lg mb-1">No matches available</h3>
+			<h3 class="font-bold text-lg mb-1">{ui.searchQuery ? `No results for "${ui.searchQuery}"` : 'No matches available'}</h3>
 			<p class="text-sm text-text-muted max-w-xs">
-				There are no live or upcoming matches for the selected categories at this moment.
+				{ui.searchQuery ? 'Try searching for another team or clear the filter.' : 'There are no live or upcoming matches at this moment.'}
 			</p>
-			<button 
-				onclick={() => window.location.reload()}
-				class="mt-6 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors"
-			>
-				Check for updates
-			</button>
+			{#if ui.searchQuery}
+				<button 
+					onclick={() => ui.searchQuery = ''}
+					class="mt-6 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors"
+				>
+					Clear Search
+				</button>
+			{:else}
+				<button 
+					onclick={() => window.location.reload()}
+					class="mt-6 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors"
+				>
+					Refresh Feed
+				</button>
+			{/if}
 		</div>
 	{/if}
 </div>

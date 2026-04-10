@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { ui } from '$lib/ui.svelte';
+
 	const menuItems = [
 		{ name: 'My Bets', icon: '📋' },
 		{ name: 'Profile', icon: '👤' },
@@ -19,7 +21,8 @@
 		<div class="relative">
 			<input 
 				type="text" 
-				placeholder="Search" 
+				placeholder="Search by team..." 
+				bind:value={ui.searchQuery}
 				class="w-full bg-background-deep border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-colors"
 			/>
 			<span class="absolute left-3 top-2.5 text-text-muted">🔍</span>

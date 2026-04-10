@@ -12,6 +12,17 @@
 		betSlip.selections.some((s) => s.odd.event_odd_id === odd.event_odd_id)
 	);
 
+	function getMarketName(id: number, fallback: string): string {
+		const mapping: Record<number, string> = {
+			1: 'Match Result',
+			10: 'Double Chance',
+			29: 'Both Teams to Score',
+			18: 'Over/Under 2.5',
+			11: 'Draw No Bet'
+		};
+		return mapping[id] || fallback;
+	}
+
 	function handleToggle() {
 		betSlip.toggle({
 			odd,
@@ -22,7 +33,7 @@
 			},
 			market: {
 				id: market.sub_type_id,
-				name: market.name
+				name: getMarketName(market.sub_type_id, market.name)
 			}
 		});
 	}

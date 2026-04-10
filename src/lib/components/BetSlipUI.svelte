@@ -1,8 +1,25 @@
 <script lang="ts">
 	import { betSlip } from '$lib/betSlip.svelte';
+	import { ui } from '$lib/ui.svelte';
 	import { fly, fade } from 'svelte/transition';
 
+	let { isMobile = false } = $props<{ isMobile?: boolean }>();
+
 	let stakeInput = $state(betSlip.stake.toString());
+
+	function handlePlaceBet() {
+		// Mock bet placement
+		alert(`Bet placed! Potential payout: $${betSlip.potentialPayout}`);
+		betSlip.clear();
+		if (isMobile) {
+			ui.closeBetSlip();
+		}
+	}
+
+	function addStake(amount: number) {
+		const current = parseFloat(stakeInput) || 0;
+		stakeInput = (current + amount).toString();
+	}
 
 	// Senior Touch: Persistence & Synchronization
 	$effect(() => {
@@ -36,11 +53,12 @@
 	});
 
 	function handleRemove(oddId: number) {
-		betSlip.remove(oddId);
+		const s = betSlip.selections.find(s => s.odd.event_odd_id === oddId);
+		if (s) betSlip.toggle(s);
 	}
 
 	function handleClear() {
-		betSlip.clear();
+		betSlip.selections = [];
 	}
 </script>
 
@@ -53,13 +71,23 @@
 				{betSlip.selections.length}
 			</span>
 		</div>
-		<button 
-			onclick={handleClear}
-			class="text-[10px] font-bold text-text-muted hover:text-red-400 uppercase transition-colors"
-			disabled={betSlip.selections.length === 0}
-		>
-			Clear All
-		</button>
+		<div class="flex items-center gap-4">
+			<button 
+				onclick={handleClear}
+				class="text-[10px] font-bold text-text-muted hover:text-red-400 uppercase transition-colors"
+				disabled={betSlip.selections.length === 0}
+			>
+				Clear All
+			</button>
+			{#if isMobile}
+				<button 
+					onclick={() => ui.closeBetSlip()}
+					class="text-text-muted hover:text-white transition-colors"
+				>
+					✕
+				</button>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Selector Tabs -->
@@ -73,85 +101,104 @@
 		{#each betSlip.selections as selection (selection.odd.event_odd_id)}
 			<div 
 				transition:fly={{ x: 20, duration: 300 }}
-				class="bg-background-deep p-3 rounded-lg border border-white/5 relative group"
+				class="bg-background-deep p-4 rounded-xl border border-white/5 relative group hover:border-emerald-500/20 transition-all shadow-lg"
 			>
 				<button 
 					onclick={() => handleRemove(selection.odd.event_odd_id)}
-					class="absolute top-2 right-2 text-text-muted hover:text-red-400 transition-colors"
+					class="absolute top-3 right-3 text-text-muted hover:text-red-400 p-1 rounded-full hover:bg-red-400/10 transition-all opacity-0 group-hover:opacity-100"
 				>
 					✕
 				</button>
 				
-				<div class="flex flex-col gap-1 pr-6">
-					<span class="text-[10px] font-bold text-emerald-500 uppercase">{selection.market.name}</span>
-					<div class="flex items-center justify-between">
-						<span class="font-bold text-sm">{selection.odd.outcome_name}</span>
-						<span class="font-black text-white italic">{selection.odd.odd_value.toFixed(2)}</span>
+				<div class="flex flex-col gap-3 pr-4">
+					<div class="flex flex-col gap-0.5">
+						<span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{selection.market.name}</span>
+						<h4 class="font-bold text-sm text-white leading-snug">
+							{selection.match.home_team} <span class="text-text-muted">vs</span> {selection.match.away_team}
+						</h4>
 					</div>
-					<div class="text-[10px] text-text-muted">
-						{selection.match.home_team} vs {selection.match.away_team}
+
+					<div class="flex items-center justify-between mt-1 bg-white/5 p-2 rounded-lg border border-white/5">
+						<div class="flex flex-col">
+							<span class="text-[10px] text-text-muted uppercase font-bold">Your Pick</span>
+							<span class="font-black text-white text-sm uppercase italic">{selection.odd.outcome_name}</span>
+						</div>
+						<div class="bg-emerald-500/10 px-3 py-1 rounded-md border border-emerald-500/20">
+							<span class="font-black text-emerald-500 italic text-lg">{selection.odd.odd_value.toFixed(2)}</span>
+						</div>
 					</div>
 				</div>
 			</div>
 		{:else}
 			<div class="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-20" in:fade>
-				<div class="text-4xl mb-4">🎫</div>
-				<p class="text-sm font-medium">Your betslip is empty</p>
-				<p class="text-xs mt-1">Select odds to start betting</p>
+				<div class="text-5xl mb-4">🎫</div>
+				<p class="text-sm font-black uppercase tracking-widest">Empty Betslip</p>
+				<p class="text-[10px] mt-1 text-text-muted uppercase">Add selections to build your ticket</p>
 			</div>
 		{/each}
 	</div>
 
 	<!-- Summary Footer -->
 	{#if betSlip.selections.length > 0}
-		<div class="p-4 bg-background-deep border-t border-white/10 flex flex-col gap-4" transition:fly={{ y: 20 }}>
-			<div class="flex flex-col gap-2">
-				<div class="flex items-center justify-between text-xs">
-					<span class="text-text-secondary">Total Odds</span>
-					<span class="font-black italic text-lg text-white">{betSlip.totalOdds.toFixed(2)}</span>
-				</div>
-				
-				<div class="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/10 group focus-within:border-emerald-500/50 transition-colors">
-					<span class="text-xs font-bold uppercase text-text-muted">Stake</span>
-					<div class="flex items-center gap-1">
-						<span class="text-xs text-text-muted font-bold">$</span>
-						<input 
-							type="text" 
-							bind:value={stakeInput}
-							class="w-20 bg-transparent text-right font-black text-white focus:outline-none"
-						/>
+		<div class="p-4 bg-background-deep border-t border-white/10" transition:fly={{ y: 20 }}>
+			<div class="bg-background-surface rounded-2xl border border-white/10 p-4 shadow-2xl flex flex-col gap-4">
+				<div class="space-y-3">
+					<div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted px-1">
+						<span>Ticket Odds</span>
+						<span class="text-white italic text-sm">{betSlip.totalOdds.toFixed(2)}</span>
+					</div>
+					
+					<div class="flex flex-col gap-3 bg-white/5 p-4 rounded-xl border border-white/10 group focus-within:border-emerald-500/50 transition-colors">
+						<div class="flex items-center justify-between">
+							<span class="text-[10px] font-black uppercase tracking-widest text-text-muted">Stake</span>
+							<div class="flex items-center gap-1">
+								<span class="text-xs text-text-muted font-bold">$</span>
+								<input 
+									type="text" 
+									bind:value={stakeInput}
+									class="w-24 bg-transparent text-right font-black text-xl text-white focus:outline-none"
+								/>
+							</div>
+						</div>
+						<!-- Quick Stake Buttons -->
+						<div class="flex gap-2">
+							{#each [10, 50, 100] as amount}
+								<button 
+									onclick={() => addStake(amount)}
+									class="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/20 text-[10px] font-black text-text-muted hover:text-emerald-500 transition-all uppercase"
+								>
+									+${amount}
+								</button>
+							{/each}
+						</div>
+					</div>
+
+					<div class="flex items-center justify-between bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
+						<span class="text-[10px] font-black uppercase tracking-widest text-emerald-500/70">Potential Payout</span>
+						<span class="font-black text-2xl text-emerald-500 italic">
+							${betSlip.potentialPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+						</span>
 					</div>
 				</div>
 
-				<div class="flex items-center justify-between text-xs px-1">
-					<span class="text-text-secondary">Potential Payout</span>
-					<span class="font-black text-lg text-emerald-500">${betSlip.potentialPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-				</div>
-			</div>
-
-			<!-- Action Button -->
-			<div class="p-4 border-t border-white/5 space-y-3">
-				<div class="flex items-center justify-between text-xs text-text-muted">
-					<span>Commission (0%)</span>
-					<span>$0.00</span>
-				</div>
-				
+				<!-- Action Button -->
 				<button 
+					onclick={handlePlaceBet}
 					disabled={betSlip.selections.length === 0 || betSlip.stake <= 0}
-					class="w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-2xl transition-all active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed
-					{betSlip.potentialPayout > 10000 ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'} text-white"
+					class="w-full py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl transition-all active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed
+					{betSlip.potentialPayout > 10000 ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/30' : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/30'} text-white"
 				>
 					{#if betSlip.selections.length === 0}
 						Select an outcome
 					{:else if betSlip.stake <= 0}
 						Enter a stake
 					{:else}
-						Place Bet (${betSlip.potentialPayout.toLocaleString()})
+						Place Bet
 					{/if}
 				</button>
 				
-				<p class="text-[10px] text-center text-text-muted leading-relaxed">
-					By clicking Place Bet, you agree to our Terms of Service. Odds are subject to change until confirmed.
+				<p class="text-[9px] text-center text-text-muted leading-tight uppercase font-bold px-2">
+					By placing this bet, you agree to our <span class="text-text-secondary">Terms</span> and <span class="text-text-secondary">Privacy Policy</span>.
 				</p>
 			</div>
 		</div>
