@@ -12,6 +12,19 @@
 	const formattedDate = $derived(new Date(match.start_time).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }));
 </script>
 
+{#snippet marketGrid(market: Market | undefined, label: string)}
+	{#if market}
+		<div class="flex flex-col gap-1.5">
+			<span class="text-[10px] text-text-muted font-black uppercase text-center mb-1">{label}</span>
+			<div class="flex gap-1">
+				{#each market.odds as odd}
+					<OddButton {odd} {match} {market} />
+				{/each}
+			</div>
+		</div>
+	{/if}
+{/snippet}
+
 <article class="bg-background-surface rounded-xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors mb-3">
 	<div class="px-4 py-2 bg-white/5 flex items-center justify-between">
 		<div class="flex items-center gap-2">
@@ -39,46 +52,17 @@
 			</div>
 		</div>
 
-		<!-- Markets Grid (Horizontal Scroller on Mobile) -->
-		<div class="w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+		<!-- Markets Grid (Optimized Passive Scroller) -->
+		<div 
+			class="w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scroll-smooth"
+			onwheel={(e) => {}} 
+		>
 			<div class="flex items-center gap-6 min-w-max">
-				<!-- 1x2 Market -->
-				{#if market1x2}
-					<div class="flex flex-col gap-1.5">
-						<span class="text-[10px] text-text-muted font-black uppercase text-center mb-1">1X2</span>
-						<div class="flex gap-1">
-							{#each market1x2.odds as odd}
-								<OddButton {odd} {match} market={market1x2} />
-							{/each}
-						</div>
-					</div>
-				{/if}
+				{@render marketGrid(market1x2, '1X2')}
+				{@render marketGrid(marketDC, 'Double Chance')}
+				{@render marketGrid(marketGG, 'GG/NG')}
 
-				<!-- Double Chance Market -->
-				{#if marketDC}
-					<div class="flex flex-col gap-1.5">
-						<span class="text-[10px] text-text-muted font-black uppercase text-center mb-1">Double Chance</span>
-						<div class="flex gap-1">
-							{#each marketDC.odds as odd}
-								<OddButton {odd} {match} market={marketDC} />
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<!-- GG/NG Market -->
-				{#if marketGG}
-					<div class="flex flex-col gap-1.5">
-						<span class="text-[10px] text-text-muted font-black uppercase text-center mb-1">GG/NG</span>
-						<div class="flex gap-1">
-							{#each marketGG.odds as odd}
-								<OddButton {odd} {match} market={marketGG} />
-							{/each}
-						</div>
-					</div>
-				{/if}
-
-				<!-- More Markets Placeholder -->
+				<!-- More Markets -->
 				<button class="flex flex-col items-center justify-center p-2 rounded hover:bg-white/5 transition-colors group self-end">
 					<span class="text-[10px] font-bold text-text-muted mb-1">{match.total_markets}+</span>
 					<span class="text-xs font-bold text-text-secondary group-hover:text-white uppercase">More</span>

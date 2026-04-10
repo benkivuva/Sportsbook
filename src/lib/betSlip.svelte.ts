@@ -1,8 +1,18 @@
+import { dev } from '$app/environment';
 import type { Selection } from './types';
 
 export class BetSlip {
 	selections = $state<Selection[]>([]);
 	stake = $state<number>(10);
+
+	constructor() {
+		// Senior Tooling: Monitor state changes during development
+		$inspect(this.selections).with((type, value) => {
+			if (dev) {
+				console.log(`[BetSlip Selections ${type}]:`, value);
+			}
+		});
+	}
 
 	totalOdds = $derived.by(() => {
 		if (this.selections.length === 0) return 0;

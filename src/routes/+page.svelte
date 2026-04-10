@@ -50,11 +50,27 @@
 				<div class="h-32 bg-background-surface rounded-xl border border-white/5 animate-pulse"></div>
 			{/each}
 		</div>
-	{:else}
+	{:else if data.matches.length > 0}
 		<div class="flex flex-col gap-1" in:fade>
 			{#each data.matches as match (match.parent_match_id)}
 				<GameCard {match} />
 			{/each}
+		</div>
+	{:else}
+		<div class="bg-background-surface border border-white/5 rounded-2xl p-12 text-center flex flex-col items-center justify-center" in:fade>
+			<div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 grayscale opacity-50">
+				⚽
+			</div>
+			<h3 class="font-bold text-lg mb-1">No matches available</h3>
+			<p class="text-sm text-text-muted max-w-xs">
+				There are no live or upcoming matches for the selected categories at this moment.
+			</p>
+			<button 
+				onclick={() => window.location.reload()}
+				class="mt-6 text-sm font-bold text-emerald-500 hover:text-emerald-400 transition-colors"
+			>
+				Check for updates
+			</button>
 		</div>
 	{/if}
 </div>
