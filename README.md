@@ -1,4 +1,4 @@
-# 🏆 High-Performance Svelte 5 Sportsbook
+# High-Performance Svelte 5 Sportsbook
 
 A premium, "compiler-first" Sportsbook landing page built to senior technical specifications. This application prioritizes sub-millisecond interaction times and memory-safe reactivity using Svelte 5 Runes.
 

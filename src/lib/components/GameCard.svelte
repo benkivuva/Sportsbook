@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Match, Market } from '$lib/types';
 	import OddButton from './OddButton.svelte';
+	import Highlighter from './Highlighter.svelte';
+	import { ui } from '$lib/ui.svelte';
 
 	let { match } = $props<{ match: Match }>();
 
@@ -40,13 +42,19 @@
 		<div class="flex-1 w-full md:w-auto">
 			<div class="flex flex-col gap-1 mb-3">
 				<div class="flex items-center justify-between md:justify-start md:gap-4">
-					<h3 class="font-bold text-lg md:text-xl">{match.home_team}</h3>
-					<span class="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">LIVE</span>
+					<h3 class="font-bold text-lg md:text-xl text-white">
+						<Highlighter text={match.home_team} query={ui.searchQuery} />
+					</h3>
+					<span class="bg-red-500/10 text-red-500 text-[10px] font-black px-2 py-0.5 rounded-md border border-red-500/20 uppercase">
+						Live
+					</span>
 				</div>
-				<h3 class="font-bold text-lg md:text-xl">{match.away_team}</h3>
+				<h3 class="font-bold text-lg md:text-xl text-white">
+					<Highlighter text={match.away_team} query={ui.searchQuery} />
+				</h3>
 			</div>
 			
-			<div class="flex items-center gap-3 text-xs text-text-muted font-medium">
+			<div class="flex items-center gap-3 text-xs text-text-muted font-medium mt-3">
 				<span class="flex items-center gap-1">🕒 {formattedTime}</span>
 				<span class="flex items-center gap-1">📅 {formattedDate}</span>
 			</div>

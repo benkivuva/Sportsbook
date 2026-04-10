@@ -2,11 +2,11 @@
 	import { ui } from '$lib/ui.svelte';
 
 	const menuItems = [
-		{ name: 'My Bets', icon: '📋' },
-		{ name: 'Profile', icon: '👤' },
-		{ name: 'Chat us', icon: '💬' },
-		{ name: 'Join Affiliate', icon: '🤝' },
-		{ name: 'Promos', icon: '🔥' }
+		{ name: 'My Bets' },
+		{ name: 'Profile' },
+		{ name: 'Chat us' },
+		{ name: 'Join Affiliate' },
+		{ name: 'Promos' }
 	];
 
 	const topGames = [
@@ -25,14 +25,13 @@
 				bind:value={ui.searchQuery}
 				class="w-full bg-background-deep border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-colors"
 			/>
-			<span class="absolute left-3 top-2.5 text-text-muted">🔍</span>
+			<span class="absolute left-3 top-2.5 text-text-muted text-[10px]">SEARCH</span>
 		</div>
 	</div>
 
 	<div class="px-2 grid grid-cols-3 gap-1 mb-8">
 		{#each menuItems as item}
 			<button class="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-white/5 transition-colors group">
-				<span class="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
 				<span class="text-[10px] uppercase font-bold text-text-muted group-hover:text-text-secondary">{item.name}</span>
 			</button>
 		{/each}
@@ -54,13 +53,13 @@
 		<h3 class="text-[10px] uppercase font-bold text-text-muted mb-4 tracking-widest">Top Leagues</h3>
 		<div class="flex flex-col gap-1">
 			<button class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 text-sm text-text-secondary hover:text-white transition-colors">
-				<span>🇪🇸</span> LaLiga
+				LaLiga
 			</button>
 			<button class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 text-sm text-text-secondary hover:text-white transition-colors">
-				<span>🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> Premier League
+				Premier League
 			</button>
 			<button class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 text-sm text-text-secondary hover:text-white transition-colors">
-				<span>🇩🇪</span> Bundesliga
+				Bundesliga
 			</button>
 		</div>
 	</div>

@@ -9,7 +9,7 @@
 
 	function handlePlaceBet() {
 		// Mock bet placement
-		alert(`Bet placed! Potential payout: $${betSlip.potentialPayout}`);
+		ui.showToast(`BET PLACED: $${betSlip.potentialPayout.toLocaleString()}`);
 		betSlip.clear();
 		if (isMobile) {
 			ui.closeBetSlip();
@@ -21,7 +21,7 @@
 		stakeInput = (current + amount).toString();
 	}
 
-	// Senior Touch: Persistence & Synchronization
+	// Senior Touch: Input Synchronization
 	$effect(() => {
 		const val = parseFloat(stakeInput);
 		if (!isNaN(val)) {
@@ -29,27 +29,9 @@
 		}
 	});
 
-	// Load initial state from local storage
+	// Sync local stakeInput when global betSlip.stake changes (e.g. from persistence)
 	$effect(() => {
-		const saved = localStorage.getItem('sportsbook_slip');
-		if (saved) {
-			try {
-				const { selections, stake } = JSON.parse(saved);
-				betSlip.selections = selections;
-				betSlip.stake = stake;
-				stakeInput = stake.toString();
-			} catch (e) {
-				console.error('Failed to restore betslip', e);
-			}
-		}
-	});
-
-	// Auto-save changes
-	$effect(() => {
-		localStorage.setItem('sportsbook_slip', JSON.stringify({
-			selections: betSlip.selections,
-			stake: betSlip.stake
-		}));
+		stakeInput = betSlip.stake.toString();
 	});
 
 	function handleRemove(oddId: number) {
@@ -131,7 +113,6 @@
 			</div>
 		{:else}
 			<div class="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-20" in:fade>
-				<div class="text-5xl mb-4">🎫</div>
 				<p class="text-sm font-black uppercase tracking-widest">Empty Betslip</p>
 				<p class="text-[10px] mt-1 text-text-muted uppercase">Add selections to build your ticket</p>
 			</div>

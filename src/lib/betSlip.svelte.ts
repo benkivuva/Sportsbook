@@ -51,3 +51,28 @@ export class BetSlip {
 }
 
 export const betSlip = new BetSlip();
+
+// Senior Touch: Global Persistence Bootstrapper
+// This ensures that state is restored once on app load, rather than inside conditional components
+if (typeof window !== 'undefined') {
+	const saved = localStorage.getItem('sportsbook_slip');
+	if (saved) {
+		try {
+			const { selections, stake } = JSON.parse(saved);
+			betSlip.selections = selections;
+			betSlip.stake = stake;
+		} catch (e) {
+			console.error('Failed to restore betslip', e);
+		}
+	}
+
+	// Auto-save selections globally
+	$effect.root(() => {
+		$effect(() => {
+			localStorage.setItem('sportsbook_slip', JSON.stringify({
+				selections: betSlip.selections,
+				stake: betSlip.stake
+			}));
+		});
+	});
+}
