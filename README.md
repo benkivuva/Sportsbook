@@ -2,7 +2,7 @@
 
 A premium, "compiler-first" Sportsbook landing page built to senior technical specifications. This application prioritizes sub-millisecond interaction times and memory-safe reactivity using Svelte 5 Runes.
 
-## 🚀 Key Technical Features
+## Key Technical Features
 
 ### 1. The "Runes" Reactivity Engine
 Utilizing Svelte 5's `$state`, `$derived`, and `$effect` primitives to go beyond the Virtual DOM. All odds calculations, potential payouts, and ticket aggregations happen in a single pass with zero re-rendering overhead.
@@ -23,13 +23,13 @@ JavaScript floating-point math is notoriously imprecise for currency. This proje
 - **Custom Error Boundaries**: Implemented `+error.svelte` to catch and manage data parsing failures without crashing the experience.
 - **Empty State Logic**: Comprehensive "No Matches" and "Search Unavailable" views ensure the user is never left with a blank screen.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 - **Framework**: SvelteKit 5 (Next-Gen)
 - **Styling**: Tailwind CSS 4
 - **Language**: TypeScript (Strict Mode)
 - **State**: Class-based Service Pattern with Svelte Runes
 
-## 📦 Getting Started
+##  Getting Started
 
 ```bash
 # Install dependencies
@@ -42,7 +42,7 @@ npm run dev
 npx svelte-check
 ```
 
-## 📐 Architecture Overview
+##  Architecture Overview
 ```
 src/
 ├── lib/
