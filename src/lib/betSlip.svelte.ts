@@ -4,6 +4,7 @@ import type { Selection } from './types';
 export class BetSlip {
 	selections = $state<Selection[]>([]);
 	stake = $state<number>(10);
+	maxSelections = 30;
 
 	constructor() {
 		// Senior Tooling: Monitor state changes during development
@@ -16,10 +17,15 @@ export class BetSlip {
 
 	totalOdds = $derived.by(() => {
 		if (this.selections.length === 0) return 0;
-		return this.selections.reduce((acc, curr) => acc * curr.odd.odd_value, 1);
+		const odds = this.selections.reduce((acc, curr) => acc * curr.odd.odd_value, 1);
+		// Industry Standard: Round to 2 decimal places to avoid JS floating point issues
+		return Math.round((odds + Number.EPSILON) * 100) / 100;
 	});
 
-	potentialPayout = $derived(this.totalOdds * this.stake);
+	potentialPayout = $derived.by(() => {
+		const payout = this.totalOdds * this.stake;
+		return Math.round((payout + Number.EPSILON) * 100) / 100;
+	});
 
 	toggle(selection: Selection) {
 		const existingIndex = this.selections.findIndex(
@@ -29,15 +35,16 @@ export class BetSlip {
 		if (existingIndex !== -1) {
 			this.selections.splice(existingIndex, 1);
 		} else {
-			const conflictIndex = this.selections.findIndex(
-				(s) =>
-					s.match.id === selection.match.id &&
-					s.market.id === selection.market.id
+			// PROFESSIONAL RULE: Related Contingency Prevention
+			// Search for ANY selection belonging to the same match
+			const matchConflictIndex = this.selections.findIndex(
+				(s) => s.match.id === selection.match.id
 			);
 
-			if (conflictIndex !== -1) {
-				this.selections[conflictIndex] = selection;
-			} else {
+			if (matchConflictIndex !== -1) {
+				// Replace any existing market selection for this match
+				this.selections[matchConflictIndex] = selection;
+			} else if (this.selections.length < this.maxSelections) {
 				this.selections.push(selection);
 			}
 		}

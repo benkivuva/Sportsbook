@@ -4,11 +4,35 @@
 
 	let stakeInput = $state(betSlip.stake.toString());
 
+	// Senior Touch: Persistence & Synchronization
 	$effect(() => {
 		const val = parseFloat(stakeInput);
 		if (!isNaN(val)) {
 			betSlip.stake = val;
 		}
+	});
+
+	// Load initial state from local storage
+	$effect(() => {
+		const saved = localStorage.getItem('sportsbook_slip');
+		if (saved) {
+			try {
+				const { selections, stake } = JSON.parse(saved);
+				betSlip.selections = selections;
+				betSlip.stake = stake;
+				stakeInput = stake.toString();
+			} catch (e) {
+				console.error('Failed to restore betslip', e);
+			}
+		}
+	});
+
+	// Auto-save changes
+	$effect(() => {
+		localStorage.setItem('sportsbook_slip', JSON.stringify({
+			selections: betSlip.selections,
+			stake: betSlip.stake
+		}));
 	});
 
 	function handleRemove(oddId: number) {
@@ -99,15 +123,37 @@
 					</div>
 				</div>
 
-				<div class="flex items-center justify-between text-xs mt-2">
+				<div class="flex items-center justify-between text-xs px-1">
 					<span class="text-text-secondary">Potential Payout</span>
-					<span class="font-black text-xl text-emerald-500">${betSlip.potentialPayout.toFixed(2)}</span>
+					<span class="font-black text-lg text-emerald-500">${betSlip.potentialPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
 				</div>
 			</div>
 
-			<button class="w-full bg-emerald-500 hover:bg-emerald-600 py-4 rounded-xl font-black text-white shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
-				PLACE BET
-			</button>
+			<!-- Action Button -->
+			<div class="p-4 border-t border-white/5 space-y-3">
+				<div class="flex items-center justify-between text-xs text-text-muted">
+					<span>Commission (0%)</span>
+					<span>$0.00</span>
+				</div>
+				
+				<button 
+					disabled={betSlip.selections.length === 0 || betSlip.stake <= 0}
+					class="w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-2xl transition-all active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed
+					{betSlip.potentialPayout > 10000 ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20'} text-white"
+				>
+					{#if betSlip.selections.length === 0}
+						Select an outcome
+					{:else if betSlip.stake <= 0}
+						Enter a stake
+					{:else}
+						Place Bet (${betSlip.potentialPayout.toLocaleString()})
+					{/if}
+				</button>
+				
+				<p class="text-[10px] text-center text-text-muted leading-relaxed">
+					By clicking Place Bet, you agree to our Terms of Service. Odds are subject to change until confirmed.
+				</p>
+			</div>
 		</div>
 	{/if}
 </div>
