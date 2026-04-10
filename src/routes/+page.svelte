@@ -5,14 +5,7 @@
 	import { fade } from 'svelte/transition';
 
 	let { data } = $props<{ data: PageData }>();
-	let isLoading = $state(true);
-
-	onMount(() => {
-		// Mock initial loading state for skeleton demonstration
-		setTimeout(() => {
-			isLoading = false;
-		}, 800);
-	});
+	let isLoading = $state(false);
 </script>
 
 <div class="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">

@@ -17,11 +17,8 @@ export class BetSlip {
 		);
 
 		if (existingIndex !== -1) {
-			// Remove if already selected
 			this.selections.splice(existingIndex, 1);
 		} else {
-			// Enforce: Max 1 outcome per market per match
-			// Find if there's already a selection for this match and market
 			const conflictIndex = this.selections.findIndex(
 				(s) =>
 					s.match.id === selection.match.id &&
@@ -29,10 +26,8 @@ export class BetSlip {
 			);
 
 			if (conflictIndex !== -1) {
-				// Replace the existing selection in the same market
 				this.selections[conflictIndex] = selection;
 			} else {
-				// Add new selection
 				this.selections.push(selection);
 			}
 		}
@@ -47,5 +42,4 @@ export class BetSlip {
 	}
 }
 
-// Singleton instance for the app
 export const betSlip = new BetSlip();

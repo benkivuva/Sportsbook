@@ -4,7 +4,6 @@
 
 	let { match } = $props<{ match: Match }>();
 
-	// Get specific markets for display
 	const market1x2 = $derived(match.markets.find((m: Market) => m.sub_type_id === 1));
 	const marketDC = $derived(match.markets.find((m: Market) => m.sub_type_id === 10));
 	const marketGG = $derived(match.markets.find((m: Market) => m.sub_type_id === 29));

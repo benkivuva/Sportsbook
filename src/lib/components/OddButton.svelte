@@ -8,7 +8,6 @@
 		market: Market
 	}>();
 
-	// Check if this specific odd is selected
 	let isSelected = $derived(
 		betSlip.selections.some((s) => s.odd.event_odd_id === odd.event_odd_id)
 	);
