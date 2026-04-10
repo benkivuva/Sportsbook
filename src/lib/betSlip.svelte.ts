@@ -6,15 +6,6 @@ export class BetSlip {
 	stake = $state<number>(10);
 	maxSelections = 30;
 
-	constructor() {
-		// Senior Tooling: Monitor state changes during development
-		$inspect(this.selections).with((type, value) => {
-			if (dev) {
-				console.log(`[BetSlip Selections ${type}]:`, value);
-			}
-		});
-	}
-
 	totalOdds = $derived.by(() => {
 		if (this.selections.length === 0) return 0;
 		const odds = this.selections.reduce((acc, curr) => acc * curr.odd.odd_value, 1);

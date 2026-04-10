@@ -3,7 +3,13 @@
 	import SideNav from '$lib/components/SideNav.svelte';
 	import BetSlipUI from '$lib/components/BetSlipUI.svelte';
 	import { betSlip } from '$lib/betSlip.svelte';
+	import { dev } from '$app/environment';
 	import './layout.css';
+
+	// Senior Debugging: Safely monitor state within a reactive component context
+	$inspect(betSlip.selections).with((type, value) => {
+		if (dev) console.log(`[BetSlip Selections ${type}]:`, value);
+	});
 
 	let { children } = $props();
 </script>
